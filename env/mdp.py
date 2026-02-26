@@ -55,3 +55,40 @@ if __name__ == "__main__":
     print(f"Successfully generated {len(ALL_STATES)} valid states!")
     print(f"Initial Starting State (Full Board): {ALL_STATES[0]}")
     print(f"Empty Terminal State (Game Over): {ALL_STATES[-1]}")
+    
+def get_legal_actions(state):
+    """
+    Determines all valid, non-poisonous moves for a given board state.
+    In Chomp, a valid move is selecting any currently remaining chocolate square 
+    EXCEPT the poisoned square at coordinate (0, 0).
+    
+    Args:
+        state (tuple): The current board configuration, e.g., (5, 5, 4, 2).
+        
+    Returns:
+        list of tuples: A list of valid (row, col) coordinates.
+    """
+    legal_actions = []
+    
+    # We iterate over all 4 rows of the board (r = 0, 1, 2, 3)
+    for r in range(4):
+        
+        # state[r] tells us exactly how many squares are currently left in row 'r'.
+        # For example, if state[0] is 5, the valid column indices are 0, 1, 2, 3, 4.
+        # We use range(state[r]) to iterate through these valid column indices 'c'.
+        for c in range(state[r]):
+            
+            # PHASE 1 ROADMAP REQUIREMENT: "excluding the poisoned (0,0) square"
+            # The square at row 0, column 0 is the poison. 
+            # A player cannot voluntarily choose to eat it because doing so loses the game.
+            # By skipping it here, if a player is ever handed a board where ONLY (0,0) 
+            # is left (the state (1, 0, 0, 0)), this function will return an empty list [].
+            # An empty list will signal to our environment that the game is over.
+            if r == 0 and c == 0:
+                continue  # Skip the poison square
+                
+            # If the square exists and is not the poison, it is a legally valid bite.
+            # We record the action as a coordinate tuple (row, column).
+            legal_actions.append((r, c))
+            
+    return legal_actions
